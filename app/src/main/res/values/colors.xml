@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF00</color>
+    <color name="colorPrimaryDark">#00F</color>
+    <color name="colorAccent">#F15A22</color>
+    <color name="Background">#FFF</color>
+    <color name="virOrange">#F15A22</color>
+    <color name="textColor">#FFF</color>
+
+    <color name="textFieldColor">#000</color>
+
+    <color name="textShadow">#FFF</color>
+
+    <color name="listViewBg">#DADFEE</color>
+
+    <color name="sendLightColor">#31f095</color>
+
+    <color name="sendMeduimColor">#04ccaa</color>
+
+    <color name="sendDarkColor">#26ad5e</color>
+
+    <color name="barDarkColor">#CECECE</color>
+
+    <color name="barMeduimColor">#DFDEE0</color>
+
+    <color name="barLightColor">#F2F2F2</color>
+</resources>
