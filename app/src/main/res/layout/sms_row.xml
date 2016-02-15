@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5sp"
-        android:background="@mipmap/speech_bubble_green"
+        android:background="@mipmap/uber_grey"
         android:shadowColor="@color/textShadow"
         android:shadowDx="1"
         android:shadowDy="1"

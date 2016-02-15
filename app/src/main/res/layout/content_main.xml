@@ -21,7 +21,12 @@
         android:layout_weight="1"
         android:listSelector="#00000000" >
     </ListView>
-
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Disconnect from operator"
+        android:onClick="disconnect"/>
     <LinearLayout
         android:id="@+id/bottom_write_bar"
         android:layout_width="fill_parent"

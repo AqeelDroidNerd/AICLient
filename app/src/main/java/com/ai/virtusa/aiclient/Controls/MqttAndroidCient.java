@@ -2,7 +2,6 @@ package com.ai.virtusa.aiclient.Controls;
 
 import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.ai.virtusa.aiclient.MainActivity;
 import com.ai.virtusa.aiclient.UI.Message;
@@ -121,6 +120,9 @@ public class MqttAndroidCient implements MqttCallback {
 
             Log.d("Received", topic + ": " + message + Utility.displayMessage.size());
             final Message msg = new Message(""+message,false);
+            JSONFormatController json = new JSONFormatController();
+            final String result[] = json.readJSONmessage(""+message);
+            final String evaluate = PostRequestController.evaluateResponse(result[0]);
             act.runOnUiThread(new Runnable() {
 
                 @Override
@@ -132,8 +134,11 @@ public class MqttAndroidCient implements MqttCallback {
 				           /* if(displayMessage.size()){
 				            	displayMessage.remove();
 				            }*/
-                            MainActivity.addNewMessage(new Message("" + message, false));
 
+                        if(result[2] != null && evaluate != "Operator Disconnected")
+                            MainActivity.addNewMessage(new Message(evaluate, false));
+                        if(result[2] != null && evaluate == "Operator Disconnected")
+                            MainActivity.addNewMessage(new Message(true,evaluate));
                         //Toast.makeText(act.getApplicationContext(), "" + message, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();

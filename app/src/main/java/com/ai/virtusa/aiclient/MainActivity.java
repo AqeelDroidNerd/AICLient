@@ -1,5 +1,9 @@
 package com.ai.virtusa.aiclient;
 
+import android.app.DialogFragment;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -8,59 +12,63 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.ai.virtusa.aiclient.Controls.JSONFormatController;
 import com.ai.virtusa.aiclient.Controls.MqttAndroidCient;
+import com.ai.virtusa.aiclient.Controls.PostRequestController;
 import com.ai.virtusa.aiclient.UI.Message;
 import com.ai.virtusa.aiclient.UI.MessageAdapter;
+import com.ai.virtusa.aiclient.UI.dialog;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     EditText text;
-    ListView list;
-    boolean sentFlag=false;
-    static Random rand = new Random();
+    static ListView list;
     static String sender;
     static String name;
+    public static Button button;
     public static MqttAndroidCient androidCient = new MqttAndroidCient();
-    static String topic;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(getIntent().getBooleanExtra("EXIT",false)){
+            onDestroy();
+            finish();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-       /* Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);*/
         list = (ListView) findViewById(R.id.list);
         text = (EditText) this.findViewById(R.id.text);
+        button = (Button) findViewById(R.id.button);
+
+        button .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PostRequestController.evaluateResponse("DIRROUTETOBOT");
+                button.setVisibility(View.INVISIBLE);
+            }
+
+        });
+        button.setVisibility(View.INVISIBLE);
         setTitle("Chat with Insight Support");
 
         Utility.messages = new ArrayList<Message>();
         Utility.adapter = new MessageAdapter(this, Utility.messages);
         list.setAdapter(Utility.adapter);
         name ="Aqeel";
-        Utility.messages.add(new Message("Hi! " + name + " Welcome to the Insight Support", false));
-        Utility.messages.add(new Message("working on speech bubbles.", true));
-        Utility.messages.add(new Message("you say!", true));
-        Utility.messages.add(new Message("oh thats great. how are you showing them", false));
-        Utility.adapter.notifyDataSetChanged();
-
-        addNewMessage(new Message("testing the add function", true));
-        addNewMessage(new Message("Coool", false));
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
         androidCient.setAct(this);
+        PostRequestController.setAct(this);
+        if(!isNetworkAvailable()){
+            DialogFragment dialog = new dialog();
+            dialog.show(getFragmentManager(),"tag");
+        }
+
         try {
            androidCient.connect();
         }catch(Exception s){
@@ -73,41 +81,66 @@ public class MainActivity extends AppCompatActivity {
     {
         Utility.messages.add(m);
         Utility.adapter.notifyDataSetChanged();
-        //list.setSelection(messages.size() - 1);
+        list.setSelection(Utility.messages.size() - 1);
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!isNetworkAvailable()){
+            DialogFragment dialog = new dialog();
+            dialog.show(getFragmentManager(),"tag");
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(!isNetworkAvailable()){
+            DialogFragment dialog = new dialog();
+            dialog.show(getFragmentManager(),"tag");
+        }
+    }
 
     public void sendMessage(View v)
     {
-        String newMessage = text.getText().toString().trim();
+        String newMessage = text.getText().toString();
         if(newMessage.length() > 0)
         {
             text.setText("");
             addNewMessage(new Message(newMessage, true));
             new SendMessage().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            androidCient.pub(Utility.topic, newMessage);
+            JSONFormatController json = new JSONFormatController();
+            final SendMessage msg = new SendMessage();
+            msg.msg=newMessage;
+            msg.execute();
+            //androidCient.pub(Utility.topic, result);
         }
     }
     private class SendMessage extends AsyncTask<Void, String, String>
     {
+        public String msg;
         @Override
         protected String doInBackground(Void... params) {
-            try {
-                Thread.sleep(2000); //simulate a network call
-            }catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
             this.publishProgress(String.format("sending data to support"));
             try {
-                Thread.sleep(2000); //simulate a network call
-            }catch (InterruptedException e) {
+                Thread.sleep(2000);
+                //simulate a network call
+            }catch (Exception e) {
                 e.printStackTrace();
             }
             this.publishProgress(String.format("received data from support", sender));
             try {
-                Thread.sleep(3000);//simulate a network call
-            }catch (InterruptedException e) {
+                PostRequestController.routeMessage(msg);//simulate a network call
+            }catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -134,10 +167,8 @@ public class MainActivity extends AppCompatActivity {
             if(Utility.messages.get(Utility.messages.size()-1).isStatusMessage)//check if there is any status message, now remove it.
             {
                 Utility.messages.remove(Utility.messages.size()-1);
+                Utility.adapter.notifyDataSetChanged();
             }
-            /*
-            addNewMessage(new Message(text, false)); // add the orignal message from server.*/
-            //sub("chat/aqeel");
         }
 
 
@@ -166,5 +197,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        android.os.Process.killProcess(android.os.Process.myPid());
+        super.onDestroy();
     }
 }

@@ -89,4 +89,28 @@ public class JSONFormatController {
 
         return messg;
     }
+
+    public static String AIMLreadJSON(String JSON){
+
+        String text = "";
+        try {
+            // System.out.println("Decoding :"+  JSON);
+            JSONObject jsonObject = (JSONObject) (new JSONParser().parse(JSON));
+            text = (String) jsonObject.get("botsay");
+
+            // System.out.println(messg);
+
+        } catch (ParseException  e) {
+            //
+            //    e.printStackTrace();
+            return JSON;
+        }
+        catch (Exception e) {
+            //  e.printStackTrace();
+            return null;
+        }
+
+
+        return text;
+    }
 }

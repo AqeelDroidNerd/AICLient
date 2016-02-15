@@ -1,7 +1,5 @@
 package com.ai.virtusa.aiclient.UI;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,6 +11,8 @@ import android.widget.TextView;
 
 import com.ai.virtusa.aiclient.R;
 import com.ai.virtusa.aiclient.Utility;
+
+import java.util.ArrayList;
 
 /**
  * AwesomeAdapter is a Custom class to implement custom row in ListView
@@ -69,13 +69,13 @@ public class MessageAdapter extends BaseAdapter{
             //Check whether message is mine to show green background and align to right
             if(message.isMine())
             {
-                holder.message.setBackgroundResource(R.mipmap.speech_bubble_light_blue);
+                holder.message.setBackgroundResource(R.mipmap.uber_grey);
                 lp.gravity = Gravity.RIGHT;
             }
             //If not mine then it is from sender to show orange background and align to left
             else
             {
-                holder.message.setBackgroundResource(R.mipmap.speech_bubble_dark_blue);
+                holder.message.setBackgroundResource(R.mipmap.skype_blue);
                 lp.gravity = Gravity.LEFT;
             }
             holder.message.setLayoutParams(lp);
