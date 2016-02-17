@@ -22,10 +22,17 @@ public class MqttAndroidCient implements MqttCallback {
     public void setAct(Activity act){
         this.act = act;
     }
+    public MqttAndroidCient(){
+        MemoryPersistence persistance = new MemoryPersistence();
+        try {
+            client = new MqttClient(Utility.urlFromat, "AQEEL", persistance);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
     public MqttClient connect() {
         try {
-            MemoryPersistence persistance = new MemoryPersistence();
-            client = new MqttClient(Utility.urlFromat, "AQEEL", persistance);
+
             client.connect();
             //client.subscribe("chat/+");
             sub("chat/+");
@@ -120,7 +127,6 @@ public class MqttAndroidCient implements MqttCallback {
         if(!Utility.displayMessage.isEmpty()){
 
             Log.d("Received", topic + ": " + message + Utility.displayMessage.size());
-            final Message msg = new Message(""+message,false);
             JSONFormatController json = new JSONFormatController();
             final String result[] = json.readJSONmessage(""+message);
             final String evaluate = PostRequestController.evaluateResponse(result[0]);

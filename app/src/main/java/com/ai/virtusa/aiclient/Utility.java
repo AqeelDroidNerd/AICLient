@@ -16,7 +16,7 @@ public class Utility{
         public static final String AIML_URL = "http://172.22.228.25/aiml/conversation_start.php";
         public static final String AI_URL = "http://172.22.228.25/aibot1";
         public static String topic = "chat/aqeel";
-        public static String url = "172.22.228.25";
+        public static String url = "192.168.1.102";
         public static String urlFromat = "tcp://" + url + ":1883";
         public static ArrayList<Message> messages;
         public static MessageAdapter adapter;

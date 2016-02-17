@@ -24,6 +24,7 @@ import com.ai.virtusa.aiclient.UI.Message;
 import com.ai.virtusa.aiclient.UI.MessageAdapter;
 import com.ai.virtusa.aiclient.UI.dialog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     static String sender;
     static String name;
     public static Button button;
-    public static MqttAndroidCient androidCient = new MqttAndroidCient();
+    public static MqttAndroidCient androidCient;
 
 
     @Override
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         Utility.adapter = new MessageAdapter(this, Utility.messages);
         list.setAdapter(Utility.adapter);
         name ="Aqeel";
+        androidCient = new MqttAndroidCient();
         androidCient.setAct(this);
         PostRequestController.setAct(this);
         if(!isNetworkAvailable()){
@@ -77,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
             dialog.show(getFragmentManager(),"tag");
         }
 
-        try {
+        /*try {
            androidCient.connect();
         }catch(Exception s){
             Log.d("onCreate: ", "" + s);
-        }
+        }*/
 
     }
 
@@ -124,19 +126,17 @@ public class MainActivity extends AppCompatActivity {
         {
             text.setText("");
             addNewMessage(new Message(newMessage, true));
-            new SendMessage().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             JSONFormatController json = new JSONFormatController();
-            final SendMessage msg = new SendMessage();
-            msg.msg=newMessage;
-            msg.execute();
+            new SendMessage().execute(newMessage);
             //androidCient.pub(Utility.topic, result);
         }
     }
-    private class SendMessage extends AsyncTask<Void, String, String>
+    private class SendMessage extends AsyncTask<String, String, String>
     {
-        public String msg="What is insightlive?";
+        public String msg;
+
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(String... params) {
 
             this.publishProgress(String.format("sending data to support"));
             try {
@@ -147,13 +147,13 @@ public class MainActivity extends AppCompatActivity {
             }
             this.publishProgress(String.format("received data from support", sender));
             try {
-                PostRequestController.routeMessage(msg);//simulate a network call
+               //simulate a network call
             }catch (Exception e) {
                 e.printStackTrace();
             }
 
 
-            return "hey";
+            return params[0];
 
 
         }
@@ -176,6 +176,12 @@ public class MainActivity extends AppCompatActivity {
             {
                 Utility.messages.remove(Utility.messages.size()-1);
                 Utility.adapter.notifyDataSetChanged();
+            }
+            try {
+                PostRequestController.state=2;
+                PostRequestController.routeMessage(text);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 

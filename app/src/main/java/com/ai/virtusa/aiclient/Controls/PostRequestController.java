@@ -88,7 +88,6 @@ public class PostRequestController {
                 MainActivity.button.setVisibility(View.VISIBLE);
             }
         });
-
         if(!MainActivity.androidCient.client.isConnected()){
             try {
                 MainActivity.androidCient.connect();
@@ -121,6 +120,7 @@ public class PostRequestController {
 
         // Send post request
         con.setDoOutput(true);
+
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
         wr.writeBytes(urlParameters);
         wr.flush();
@@ -170,8 +170,8 @@ public class PostRequestController {
     public static void SendMessageAIML(String message) throws IOException {
         String POST_URL = Utility.AIML_URL;
         URL obj = new URL(POST_URL);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         //add reuqest header
         con.setRequestMethod("POST");
         //  con.setRequestProperty("User-Agent", USER_AGENT);
