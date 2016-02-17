@@ -2,6 +2,7 @@ package com.ai.virtusa.aiclient.Controls;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.ai.virtusa.aiclient.MainActivity;
 import com.ai.virtusa.aiclient.UI.Message;
@@ -94,7 +95,7 @@ public class MqttAndroidCient implements MqttCallback {
     @Override
     public void connectionLost(Throwable arg0) {
         // TODO Auto-generated method stub
-
+        new Toast(act.getApplicationContext()).makeText(act.getApplicationContext(),"Connection Lost",Toast.LENGTH_LONG);
     }
 
 

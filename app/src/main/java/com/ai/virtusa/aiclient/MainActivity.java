@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +44,13 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("vAssist");
+        toolbar.setTitleTextColor(0xFFF);
+        toolbar.setLogo(R.mipmap.ic_launcher);
+
         list = (ListView) findViewById(R.id.list);
         text = (EditText) this.findViewById(R.id.text);
         button = (Button) findViewById(R.id.button);
@@ -126,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private class SendMessage extends AsyncTask<Void, String, String>
     {
-        public String msg;
+        public String msg="What is insightlive?";
         @Override
         protected String doInBackground(Void... params) {
 
