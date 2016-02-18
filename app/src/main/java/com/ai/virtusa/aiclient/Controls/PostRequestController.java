@@ -24,7 +24,7 @@ public class PostRequestController {
 
     public static int state;
     private static Activity act;
-
+    public static String response = new String();
     public static void setAct(Activity activ) {
         act = activ;
     }
@@ -81,7 +81,7 @@ public class PostRequestController {
 
 
 
-    private static void sendChatOperator(String usermessage) {
+    public static void sendChatOperator(String usermessage) {
         act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -96,146 +96,86 @@ public class PostRequestController {
             }
         }
         JSONFormatController json = new JSONFormatController();
-        String result = json.createJSONmessage("Aqeel",usermessage);
+        String result = json.createJSONmessage("Aqeel", usermessage);
         MainActivity.androidCient.pub(Utility.topic,result);
     }
 
     public static void SendMessageAI(String message) throws IOException {
 
-        String POST_URL = Utility.AI_URL;
-        URL obj = new URL(POST_URL);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-        //add reuqest header
-        con.setRequestMethod("POST");
-        //  con.setRequestProperty("User-Agent", USER_AGENT);
-        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        //    con.setRequestProperty("dataType", "json");
-        con.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
-        con.setRequestProperty("Access-Control-Allow-Origin","*");
-        con.setRequestProperty("Access-Control-Allow-Methods","PUT, GET, POST, DELETE, OPTIONS");
-        con.setRequestProperty("Access-Control-Allow-Headers", "Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token");
-        con.setRequestProperty( "charset", "utf-8");
-        String urlParameters = "user_question="+message;// $scope.usermessage;
-
-        // Send post request
-        con.setDoOutput(true);
-
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(urlParameters);
-        wr.flush();
-        wr.close();
-
-        int responseCode = con.getResponseCode();
-        //   System.out.println("\nSending 'POST' request to URL : " + POST_URL);
-        // System.out.println("Post parameters : " + urlParameters);
-        //System.out.println("Response Code : " + responseCode);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
+        new Connection(new Connection.AsyncResponse() {
+            @Override
+            public void processFinish(StringBuffer output) {
+                response = output.toString();
+            }
+        }).execute(Utility.AI_URL,"user_question=",message);
 
         //print result
-        System.out.println(response.toString());
+        System.out.println("AI PART : "+response.toString());
 
         final String res=  evaluateResponse(response.toString());
 
 
-                if(state==1){
+        if(state==1){
 
-                    act.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Utility.messages.remove(Utility.messages.size()-1);
-                            Utility.adapter.notifyDataSetChanged();
-                            MainActivity.addNewMessage(new Message(res,false));
-                        }
-                    });
-                    state = 0;
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Utility.messages.remove(Utility.messages.size()-1);
+                    Utility.adapter.notifyDataSetChanged();
+                    if(res!="")
+                        MainActivity.addNewMessage(new Message(res,false));
                 }
-                else if(state==2){
-                    sendChatOperator(message);
-                    //return;
+            });
+            state = 0;
+        }
+        else if(state==2){
+            sendChatOperator(message);
+            //return;
 
-                }
+        }
 
     }
 
     public static void SendMessageAIML(String message) throws IOException {
-        String POST_URL = Utility.AIML_URL;
-        URL obj = new URL(POST_URL);
 
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        //add reuqest header
-        con.setRequestMethod("POST");
-        //  con.setRequestProperty("User-Agent", USER_AGENT);
-        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        //    con.setRequestProperty("dataType", "json");
-        con.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
-        con.setRequestProperty("Access-Control-Allow-Origin","*");
-        con.setRequestProperty("Access-Control-Allow-Methods","PUT, GET, POST, DELETE, OPTIONS");
-        con.setRequestProperty("Access-Control-Allow-Headers", "Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token");
-        con.setRequestProperty( "charset", "utf-8");
-        String urlParameters = "say="+message;// $scope.usermessage;
+        new Connection(new Connection.AsyncResponse() {
+            @Override
+            public void processFinish(StringBuffer output) {
+                String AIML = JSONFormatController.AIMLreadJSON(output.toString());
+                response=AIML;
 
-        // Send post request
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(urlParameters);
-        wr.flush();
-        wr.close();
+            }
+        }).execute(Utility.AIML_URL, "say=", message);
 
-        int responseCode = con.getResponseCode();
-        //      System.out.println("\nSending 'POST' request to URL : " + POST_URL);
-        //     System.out.println("Post parameters : " + urlParameters);
-        //     System.out.println("Response Code : " + responseCode);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
 
         //print result
 
-        String AIML = JSONFormatController.AIMLreadJSON(response.toString());
-        System.out.println(AIML);
-
-        final String res =  evaluateResponse(AIML);
-
-            if(state==1){
-                try {
-                    SendMessageAI(message);
-                    System.out.println("SENDING AI");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        final String res =  evaluateResponse(response);
+        if(state==1){
+            try {
+                SendMessageAI(message);
+                System.out.println("SENDING AI");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            else if(state==0){
-                act.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Utility.messages.remove(Utility.messages.size()-1);
-                        Utility.adapter.notifyDataSetChanged();
+        }
+        else if(state==0){
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Utility.messages.remove(Utility.messages.size()-1);
+                    Utility.adapter.notifyDataSetChanged();
+                    if(res!="")
                         MainActivity.addNewMessage(new Message(res, false));
-                    }
-                });
+                }
+            });
 
-            }
-            else if(state ==2){
-                System.out.println("[BOTConsole] ERROR AIML");
-                return;
-            }
+        }
+        else if(state ==2){
+            //System.out.println("[BOTConsole] ERROR AIML");
+            sendChatOperator(message);
+            return;
+        }
     }
 
     public static String evaluateResponse(String msg){
@@ -262,6 +202,11 @@ public class PostRequestController {
             state = 0;
             //Remove directive
             return msg.replace("DIRROUTETOBOT", "Operator Disconnected");
+
+        }
+        else if(msg.indexOf("REROUTETOOPERATOR") >-1){
+            return msg.substring(msg.indexOf("REROUTETOOPERATOR"),msg.length()-1);
+
 
         }
                     /*changed traning bot question*/

@@ -1,3 +1,5 @@
+//ERA
+
 package com.ai.virtusa.aiclient;
 
 import android.app.DialogFragment;
@@ -120,21 +122,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendMessage(View v)
-    {
-        String newMessage = text.getText().toString();
-        if(newMessage.length() > 0)
-        {
-            text.setText("");
-            addNewMessage(new Message(newMessage, true));
-            JSONFormatController json = new JSONFormatController();
-            new SendMessage().execute(newMessage);
-            //androidCient.pub(Utility.topic, result);
-        }
+    {   String newMessage = text.getText().toString();
+            if(newMessage.length() > 0)
+            {
+                text.setText("");
+                addNewMessage(new Message(newMessage, true));
+                JSONFormatController json = new JSONFormatController();
+                new SendMessage().execute(newMessage);
+                //androidCient.pub(Utility.topic, result);
+            }
     }
     private class SendMessage extends AsyncTask<String, String, String>
     {
-        public String msg;
-
         @Override
         protected String doInBackground(String... params) {
 
@@ -147,7 +146,8 @@ public class MainActivity extends AppCompatActivity {
             }
             this.publishProgress(String.format("received data from support", sender));
             try {
-               //simulate a network call
+
+                PostRequestController.routeMessage(params[0]);  //simulate a network call
             }catch (Exception e) {
                 e.printStackTrace();
             }
@@ -177,12 +177,6 @@ public class MainActivity extends AppCompatActivity {
                 Utility.messages.remove(Utility.messages.size()-1);
                 Utility.adapter.notifyDataSetChanged();
             }
-            try {
-                PostRequestController.state=2;
-                PostRequestController.routeMessage(text);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
 
@@ -192,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
