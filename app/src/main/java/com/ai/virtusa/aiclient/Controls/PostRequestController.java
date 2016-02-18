@@ -250,12 +250,12 @@ public class PostRequestController {
 
 
         } else if (msg.indexOf("DIROPENBEACON") > -1) {
-            act.runOnUiThread(new Runnable() {
+            /*act.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     MainActivity.addNewMessage(new Message("I opened th beacon for you",false));
                 }
-            });
+            });*/
             String url = "http://172.22.228.25/beacon/#/idle";
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));

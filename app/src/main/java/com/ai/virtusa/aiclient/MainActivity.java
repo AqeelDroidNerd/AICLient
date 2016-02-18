@@ -50,10 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        toolbar.setTitle(R.string.app_name);
         toolbar.setTitleTextColor(android.R.color.white);
-        toolbar.setLogo(R.mipmap.ic_launcher);
 
         list = (ListView) findViewById(R.id.list);
         text = (EditText) this.findViewById(R.id.text);
