@@ -5,6 +5,8 @@ package com.ai.virtusa.aiclient.Controls;
  */
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 
 import com.ai.virtusa.aiclient.MainActivity;
@@ -100,49 +102,71 @@ public class PostRequestController {
         MainActivity.androidCient.pub(Utility.topic,result);
     }
 
-    public static void SendMessageAI(String message) throws IOException {
+    public static void SendMessageAI(final String message) throws IOException {
 
         new Connection(new Connection.AsyncResponse() {
             @Override
             public void processFinish(StringBuffer output) {
                 response = output.toString();
+                final String res=  evaluateResponse(response.toString());
+
+
+                if(state==1){
+
+                    act.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(res!="")
+                                MainActivity.addNewMessage(new Message(res,false));
+                        }
+                    });
+                    state = 0;
+                }
+                else if(state==2){
+                    sendChatOperator(message);
+                    //return;
+
+                }
             }
         }).execute(Utility.AI_URL,"user_question=",message);
 
         //print result
         System.out.println("AI PART : "+response.toString());
 
-        final String res=  evaluateResponse(response.toString());
 
-
-        if(state==1){
-
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Utility.messages.remove(Utility.messages.size()-1);
-                    Utility.adapter.notifyDataSetChanged();
-                    if(res!="")
-                        MainActivity.addNewMessage(new Message(res,false));
-                }
-            });
-            state = 0;
-        }
-        else if(state==2){
-            sendChatOperator(message);
-            //return;
-
-        }
 
     }
 
-    public static void SendMessageAIML(String message) throws IOException {
+    public static void SendMessageAIML(final String message) throws IOException {
 
         new Connection(new Connection.AsyncResponse() {
             @Override
             public void processFinish(StringBuffer output) {
                 String AIML = JSONFormatController.AIMLreadJSON(output.toString());
-                response=AIML;
+
+                final String res =  evaluateResponse(AIML);
+                if(state==1){
+                    try {
+                        SendMessageAI(message);
+                        System.out.println("SENDING AI");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(state==0){
+                    act.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(res!="")
+                                MainActivity.addNewMessage(new Message(res, false));
+                        }
+                    });
+
+                }
+                else if(state ==2){
+                    System.out.println("[BOTConsole] ERROR AIML");
+                    return;
+                }
 
             }
         }).execute(Utility.AIML_URL, "say=", message);
@@ -150,32 +174,7 @@ public class PostRequestController {
 
         //print result
 
-        final String res =  evaluateResponse(response);
-        if(state==1){
-            try {
-                SendMessageAI(message);
-                System.out.println("SENDING AI");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else if(state==0){
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Utility.messages.remove(Utility.messages.size()-1);
-                    Utility.adapter.notifyDataSetChanged();
-                    if(res!="")
-                        MainActivity.addNewMessage(new Message(res, false));
-                }
-            });
 
-        }
-        else if(state ==2){
-            //System.out.println("[BOTConsole] ERROR AIML");
-            sendChatOperator(message);
-            return;
-        }
     }
 
     public static String evaluateResponse(String msg){
@@ -251,7 +250,16 @@ public class PostRequestController {
 
 
         } else if (msg.indexOf("DIROPENBEACON") > -1) {
-
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    MainActivity.addNewMessage(new Message("I opened th beacon for you",false));
+                }
+            });
+            String url = "http://172.22.228.25/beacon/#/idle";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            act.startActivity(i);
             return msg.replace("DIROPENBEACON", "");
 
         } else if (msg.indexOf("DIRDONOTHING") > -1) {

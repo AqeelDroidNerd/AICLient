@@ -145,7 +145,7 @@ public class MqttAndroidCient implements MqttCallback {
                         if(result[2] != null && evaluate != "Operator Disconnected")
                             MainActivity.addNewMessage(new Message(evaluate, false));
                         if(result[2] != null && evaluate == "Operator Disconnected")
-                            MainActivity.addNewMessage(new Message(true,evaluate));
+                            new Toast(act.getApplicationContext()).makeText(act.getApplicationContext(),"Operator Disconnected",Toast.LENGTH_LONG).show();
                         //Toast.makeText(act.getApplicationContext(), "" + message, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();

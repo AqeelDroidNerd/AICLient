@@ -20,7 +20,7 @@ import java.net.URL;
  * Created by ahashim on 2/18/2016.
  */
 public class Connection extends AsyncTask<String,Void,StringBuffer> {
-
+    public static int state ;
 
     public interface AsyncResponse {
         void processFinish(StringBuffer output);
@@ -93,4 +93,6 @@ public class Connection extends AsyncTask<String,Void,StringBuffer> {
         delegate.processFinish(s);
         System.out.println("CONNECTION POST PART : " + s.toString());
     }
+
+
 }

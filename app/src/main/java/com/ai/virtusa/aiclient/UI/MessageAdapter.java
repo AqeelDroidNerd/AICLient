@@ -64,16 +64,16 @@ public class MessageAdapter extends BaseAdapter{
             lp.gravity = Gravity.LEFT;
             holder.message.setTextColor(R.color.textFieldColor);
         }
-        else
+        else if(!message.isStatusMessage())
         {
             //Check whether message is mine to show green background and align to right
-            if(message.isMine())
+            if(message.isMine() && !message.isStatusMessage())
             {
                 holder.message.setBackgroundResource(R.mipmap.uber_grey);
                 lp.gravity = Gravity.RIGHT;
             }
             //If not mine then it is from sender to show orange background and align to left
-            else
+            else if(!message.isMine() && !message.isStatusMessage())
             {
                 holder.message.setBackgroundResource(R.mipmap.skype_blue);
                 lp.gravity = Gravity.LEFT;

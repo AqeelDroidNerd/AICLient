@@ -50,8 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle("vAssist");
-        toolbar.setTitleTextColor(0xFFF);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitleTextColor(android.R.color.white);
         toolbar.setLogo(R.mipmap.ic_launcher);
 
         list = (ListView) findViewById(R.id.list);

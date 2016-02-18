@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FF00</color>
+    <color name="colorPrimary">#3498db</color>
     <color name="colorPrimaryDark">#00F</color>
     <color name="colorAccent">#F15A22</color>
     <color name="Background">#FFF</color>
@@ -13,11 +13,11 @@
 
     <color name="listViewBg">#DADFEE</color>
 
-    <color name="sendLightColor">#31f095</color>
+    <color name="sendLightColor"> #449d44</color>
 
-    <color name="sendMeduimColor">#04ccaa</color>
+    <color name="sendMeduimColor"> #449d44</color>
 
-    <color name="sendDarkColor">#26ad5e</color>
+    <color name="sendDarkColor"> #449d44</color>
 
     <color name="barDarkColor">#CECECE</color>
 
