@@ -35,7 +35,7 @@ public class MqttAndroidCient implements MqttCallback {
 
             client.connect();
             //client.subscribe("chat/+");
-            sub("chat/+");
+            sub("chat/aqeel");
 
 
             return client;

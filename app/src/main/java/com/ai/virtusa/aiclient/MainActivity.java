@@ -2,11 +2,13 @@
 
 package com.ai.virtusa.aiclient;
 
+import android.app.Application;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,11 +24,13 @@ import android.widget.ListView;
 import com.ai.virtusa.aiclient.Controls.JSONFormatController;
 import com.ai.virtusa.aiclient.Controls.MqttAndroidCient;
 import com.ai.virtusa.aiclient.Controls.PostRequestController;
+import com.ai.virtusa.aiclient.UI.FontsOveride;
 import com.ai.virtusa.aiclient.UI.Message;
 import com.ai.virtusa.aiclient.UI.MessageAdapter;
 import com.ai.virtusa.aiclient.UI.dialog;
 
-import java.io.IOException;
+import java.lang.reflect.Field;
+import android.graphics.Typeface;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +42,11 @@ public class MainActivity extends AppCompatActivity {
     public static Button button;
     public static MqttAndroidCient androidCient;
 
-
+    private static final String DEFAULT_NORMAL_BOLD_FONT_FILENAME = "calibri.ttf";
+    private static final String DEFAULT_NORMAL_BOLD_ITALIC_FONT_FILENAME = "calibri.ttf";
+    private static final String DEFAULT_NORMAL_ITALIC_FONT_FILENAME = "calibri.ttf";
+    private static final String DEFAULT_NORMAL_NORMAL_FONT_FILENAME = "calibri.ttf";
+    private static final String DEFAULT_MONOSPACE_NORMAL_FONT_FILENAME = "calibri.ttf";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if(getIntent().getBooleanExtra("EXIT",false)){
@@ -47,7 +55,11 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        try {
+            setDefaultFonts();
+        }catch(Exception e){
+           System.out.println(e.getCause());
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(android.R.color.white);
@@ -86,6 +98,33 @@ public class MainActivity extends AppCompatActivity {
         }*/
 
     }
+
+
+    private void setDefaultFonts() throws NoSuchFieldException, IllegalAccessException {
+        final Typeface bold = Typeface.createFromAsset(getAssets(), DEFAULT_NORMAL_BOLD_FONT_FILENAME);
+        final Typeface italic = Typeface.createFromAsset(getAssets(), DEFAULT_NORMAL_ITALIC_FONT_FILENAME);
+        final Typeface boldItalic = Typeface.createFromAsset(getAssets(), DEFAULT_NORMAL_BOLD_ITALIC_FONT_FILENAME);
+        final Typeface normal = Typeface.createFromAsset(getAssets(), DEFAULT_NORMAL_NORMAL_FONT_FILENAME);
+
+        Field defaultField = Typeface.class.getDeclaredField("DEFAULT");
+        defaultField.setAccessible(true);
+        defaultField.set(null, normal);
+
+        Field defaultBoldField = Typeface.class.getDeclaredField("DEFAULT_BOLD");
+        defaultBoldField.setAccessible(true);
+        defaultBoldField.set(null, bold);
+
+        Field sDefaults = Typeface.class.getDeclaredField("sDefaults");
+        sDefaults.setAccessible(true);
+        sDefaults.set(null, new Typeface[]{normal, bold, italic, boldItalic});
+
+        final Typeface normal_monospace = Typeface.createFromAsset(getAssets(), DEFAULT_MONOSPACE_NORMAL_FONT_FILENAME);
+        Field monospaceDefaultField = Typeface.class.getDeclaredField("MONOSPACE");
+        monospaceDefaultField.setAccessible(true);
+        monospaceDefaultField.set(null, normal_monospace);
+    }
+
+
 
     public static void addNewMessage(Message m)
     {

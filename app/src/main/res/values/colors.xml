@@ -2,9 +2,9 @@
 <resources>
     <color name="colorPrimary">#3498db</color>
     <color name="colorPrimaryDark">#00F</color>
-    <color name="colorAccent">#F15A22</color>
+    <color name="colorAccent">#F7941E</color>
     <color name="Background">#FFF</color>
-    <color name="virOrange">#F15A22</color>
+    <color name="virOrange">#F7941E</color>
     <color name="textColor">#FFF</color>
 
     <color name="textFieldColor">#000</color>

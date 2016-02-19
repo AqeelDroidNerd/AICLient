@@ -26,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Disconnect from operator"
+        android:theme="@style/AppTheme.AppBarOverlay"
         android:onClick="disconnect"/>
     <LinearLayout
         android:id="@+id/bottom_write_bar"
